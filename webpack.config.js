@@ -1,8 +1,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 
@@ -21,17 +20,20 @@ module.exports = function(){
         }), {}),
         output: {
             path: path.resolve(__dirname, 'static'),
-            filename: '[name].js'
+            filename: 'js/[name].js'
         },
         module: {
             rules: [
                 {test: /\.js$/, use: 'babel-loader'},
                 {
                     test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader', 'sass-loader']
-                    })
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        'css-loader',
+                        'sass-loader',
+                    ]
                  }
             ]
         },
@@ -43,7 +45,11 @@ module.exports = function(){
         //     }
         // },
         plugins: [
-            new ExtractTextPlugin('style.css'),
+            new MiniCssExtractPlugin({
+                // 类似 webpackOptions.output里面的配置 可以忽略
+                filename: 'css/[name].css',
+                chunkFilename: '[id].css',
+            }),
         ]
     }
 }
